@@ -82,23 +82,23 @@
 		}
 	});
 
-	function calcProb(team: RoundSlot, roundRouteKey: number | 'f4' | 'finals' | 'champ'): string {
-		if (!team) return '0.0';
+	function getRawProb(team: RoundSlot, roundRouteKey: number | 'f4' | 'finals' | 'champ'): number {
+		if (!team) return 0;
 
 		if (typeof roundRouteKey === 'number') {
-			if (roundRouteKey === 0) return (team.r32 * 100).toFixed(1);
+			if (roundRouteKey === 0) return team.r32;
 
 			const previousKey = roundKeys[roundRouteKey - 1];
 			const currentKey = roundKeys[roundRouteKey];
 
-			if (!previousKey || !currentKey) return '0.0';
+			if (!previousKey || !currentKey) return 0;
 
 			const previousProbability = team[previousKey];
 			const currentProbability = team[currentKey];
 
-			if (previousProbability <= 0) return '0.0';
+			if (previousProbability <= 0) return 0;
 
-			return ((currentProbability / previousProbability) * 100).toFixed(1);
+			return currentProbability / previousProbability;
 		} else {
 			// for final four views
 			let prev = 1;
@@ -106,9 +106,29 @@
 			if (roundRouteKey === 'champ') prev = team.finals || 1;
 
 			const curr = team[roundRouteKey];
-			if (prev <= 0) return '0.0';
-			return ((curr / prev) * 100).toFixed(1);
+			if (prev <= 0) return 0;
+			return curr / prev;
 		}
+	}
+
+	function calcProb(
+		team: RoundSlot,
+		opponent: RoundSlot,
+		roundRouteKey: number | 'f4' | 'finals' | 'champ'
+	): string {
+		if (!team) return '0.0';
+
+		const teamProb = getRawProb(team, roundRouteKey);
+
+		if (!opponent) {
+			return (teamProb * 100).toFixed(1);
+		}
+
+		const oppProb = getRawProb(opponent, roundRouteKey);
+
+		if (teamProb === 0 && oppProb === 0) return '0.0';
+
+		return ((teamProb / (teamProb + oppProb)) * 100).toFixed(1);
 	}
 
 	function getRoundMatchups(region: RegionName, roundIdx: number): Matchup[] {
@@ -248,6 +268,7 @@
 								{#each getRoundMatchups(currentTab, roundIndex) as matchup (matchup.matchIdx)}
 									<div class="matchup">
 										{#each matchup.teams as team, teamIndex (teamIndex)}
+											{@const opponent = matchup.teams[teamIndex === 0 ? 1 : 0]}
 											<button
 												type="button"
 												class="team"
@@ -268,7 +289,7 @@
 												</span>
 
 												{#if team}
-													<span class="prob">{calcProb(team, roundIndex)}%</span>
+													<span class="prob">{calcProb(team, opponent, roundIndex)}%</span>
 												{/if}
 											</button>
 										{/each}
@@ -287,6 +308,7 @@
 					<div class="column-body">
 						<div class="matchup">
 							{#each [getF4Teams()[0], getF4Teams()[1]] as team, teamIndex}
+								{@const opponent = teamIndex === 0 ? getF4Teams()[1] : getF4Teams()[0]}
 								<button
 									type="button"
 									class="team"
@@ -301,7 +323,7 @@
 									</span>
 
 									{#if team}
-										<span class="prob">{calcProb(team, 'finals')}%</span>
+										<span class="prob">{calcProb(team, opponent, 'finals')}%</span>
 									{/if}
 								</button>
 							{/each}
@@ -309,6 +331,7 @@
 
 						<div class="matchup">
 							{#each [getF4Teams()[2], getF4Teams()[3]] as team, teamIndex}
+								{@const opponent = teamIndex === 0 ? getF4Teams()[3] : getF4Teams()[2]}
 								<button
 									type="button"
 									class="team"
@@ -323,21 +346,22 @@
 									</span>
 
 									{#if team}
-										<span class="prob">{calcProb(team, 'finals')}%</span>
+										<span class="prob">{calcProb(team, opponent, 'finals')}%</span>
 									{/if}
 								</button>
 							{/each}
 						</div>
-					</div>
-				</section>
+						</div>
+						</section>
 
-				<!-- Column 1: National Championship -->
-				<section class="column" style="--column-index: 1;">
-					<header class="column-header">{finalFourColumnNames[1]}</header>
+						<!-- Column 1: National Championship -->
+						<section class="column" style="--column-index: 1;">
+						<header class="column-header">{finalFourColumnNames[1]}</header>
 
-					<div class="column-body">
+						<div class="column-body">
 						<div class="matchup" style="margin-top: 2rem;">
 							{#each f4Picks[0] as team, teamIndex}
+								{@const opponent = teamIndex === 0 ? f4Picks[0][1] : f4Picks[0][0]}
 								<button
 									type="button"
 									class="team"
@@ -352,12 +376,11 @@
 									</span>
 
 									{#if team}
-										<span class="prob">{calcProb(team, 'champ')}%</span>
+										<span class="prob">{calcProb(team, opponent, 'champ')}%</span>
 									{/if}
 								</button>
 							{/each}
-						</div>
-					</div>
+						</div>					</div>
 				</section>
 
 				<!-- Column 2: Champion -->

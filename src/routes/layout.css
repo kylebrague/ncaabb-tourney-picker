@@ -1,107 +1,81 @@
-@import 'tailwindcss';
-@plugin '@tailwindcss/forms';
-@import '@fontsource/fira-mono';
-
 :root {
-	--font-body:
-		Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-		'Open Sans', 'Helvetica Neue', sans-serif;
-	--font-mono: 'Fira Mono', monospace;
-	--color-bg-0: rgb(202, 216, 228);
-	--color-bg-1: hsl(209, 36%, 86%);
-	--color-bg-2: hsl(224, 44%, 95%);
-	--color-theme-1: #ff3e00;
-	--color-theme-2: #4075a6;
-	--color-text: rgba(0, 0, 0, 0.7);
-	--column-width: 42rem;
-	--column-margin-top: 4rem;
+	--font-body: 'Avenir Next', 'Segoe UI', 'Trebuchet MS', sans-serif;
+	--font-display: 'Avenir Next Condensed', 'Franklin Gothic Medium', 'Arial Narrow', sans-serif;
+	--bg-deep: #08101d;
+	--bg-surface: rgba(10, 20, 36, 0.78);
+	--bg-card: rgba(19, 33, 57, 0.82);
+	--bg-card-strong: rgba(29, 48, 82, 0.94);
+	--line-soft: rgba(148, 163, 184, 0.18);
+	--line-strong: rgba(125, 211, 252, 0.4);
+	--text-primary: #f8fafc;
+	--text-secondary: #cbd5e1;
+	--text-muted: #94a3b8;
+	--accent: #7dd3fc;
+	--accent-strong: #38bdf8;
+	--accent-warm: #f59e0b;
+	color: var(--text-primary);
 	font-family: var(--font-body);
-	color: var(--color-text);
+}
+
+html {
+	background: var(--bg-deep);
 }
 
 body {
 	min-height: 100vh;
 	margin: 0;
-	background-attachment: fixed;
-	background-color: var(--color-bg-1);
-	background-size: 100vw 100vh;
+	background-color: var(--bg-deep);
 	background-image:
-		radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 100%),
-		linear-gradient(180deg, var(--color-bg-0) 0%, var(--color-bg-1) 15%, var(--color-bg-2) 50%);
+		radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 34%),
+		radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 28%),
+		linear-gradient(180deg, #0d1729 0%, #08101d 52%, #050912 100%);
+	background-attachment: fixed;
+}
+
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+	background-size: 40px 40px;
+	mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
 }
 
 h1,
 h2,
+h3,
 p {
-	font-weight: 400;
-}
-
-p {
-	line-height: 1.5;
+	margin: 0;
 }
 
 a {
-	color: var(--color-theme-1);
-	text-decoration: none;
+	color: inherit;
 }
 
-a:hover {
-	text-decoration: underline;
-}
-
-h1 {
-	font-size: 2rem;
-	text-align: center;
-}
-
-h2 {
-	font-size: 1rem;
-}
-
-pre {
-	font-size: 16px;
-	font-family: var(--font-mono);
-	background-color: rgba(255, 255, 255, 0.45);
-	border-radius: 3px;
-	box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
-	padding: 0.5em;
-	overflow-x: auto;
-	color: var(--color-text);
-}
-
-.text-column {
-	display: flex;
-	max-width: 48rem;
-	flex: 0.6;
-	flex-direction: column;
-	justify-content: center;
-	margin: 0 auto;
-}
-
-input,
 button {
-	font-size: inherit;
-	font-family: inherit;
+	color: inherit;
 }
 
-button:focus:not(:focus-visible) {
-	outline: none;
+button:focus-visible,
+a:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
 }
 
-@media (min-width: 720px) {
-	h1 {
-		font-size: 2.4rem;
-	}
-}
-
-.visually-hidden {
-	border: 0;
-	clip: rect(0 0 0 0);
-	height: auto;
-	margin: 0;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
-	white-space: nowrap;
+#svelte {
+	min-height: 100vh;
 }
